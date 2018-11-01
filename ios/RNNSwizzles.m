@@ -23,11 +23,7 @@ static void __RNN_setFrame_orig(UIScrollView* self, SEL _cmd, CGRect frame)
 	__SWZ_setFrame_orig(self, _cmd, frame);
 	
 	UIEdgeInsets contentInset;
-	if (@available(iOS 11.0, *)) {
-		contentInset = self.adjustedContentInset;
-	} else {
-		contentInset = self.contentInset;
-	}
+	contentInset = self.contentInset;
 	
 	CGSize contentSize = self.contentSize;
 	
@@ -48,11 +44,6 @@ static void __RNN_setFrame_orig(UIScrollView* self, SEL _cmd, CGRect frame)
 - (id)__swz_initWithEventDispatcher:(id)eventDispatcher
 {
 	id returnValue = __SWZ_initWithEventDispatcher_orig(self, _cmd, eventDispatcher);
-	
-	if (@available(iOS 11.0, *)) {
-		[(UIScrollView*)[returnValue valueForKey:@"scrollView"] setContentInsetAdjustmentBehavior:UIScrollViewContentInsetAdjustmentScrollableAxes];
-	}
-	
 	return returnValue;
 }
 #endif
@@ -77,18 +68,6 @@ static void __RNN_setFrame_orig(UIScrollView* self, SEL _cmd, CGRect frame)
 		__SWZ_initWithEventDispatcher_orig = (void*)method_getImplementation(m1);
 		Method m2 = class_getInstanceMethod([RNNSwizzles class], NSSelectorFromString(@"__swz_initWithEventDispatcher:"));
 		method_exchangeImplementations(m1, m2);
-		
-		if (@available(iOS 11.0, *)) {
-			cls = NSClassFromString(@"RCTCustomScrollView");
-			if(cls == NULL)
-			{
-				return;
-			}
-			
-			m1 = class_getInstanceMethod(cls, @selector(setFrame:));
-			__SWZ_setFrame_orig = (void*)method_getImplementation(m1);
-			method_setImplementation(m1, (IMP)__RNN_setFrame_orig);
-		}
 	});
 #endif
 }
